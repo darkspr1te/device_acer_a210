@@ -5,12 +5,12 @@ $(call inherit-product, device/common/gps/gps_us_supl.mk)
 
 # TODO: LtoDownloader
 
-$(call inherit-product-if-exists, vendor/acer/a510/a510-vendor.mk)
+$(call inherit-product-if-exists, vendor/acer/a210/a210-vendor.mk)
 
 PRODUCT_AAPT_CONFIG := normal large xlarge hdpi
 PRODUCT_AAPT_PREF_CONFIG := xlarge hdpi
 
-DEVICE_PACKAGE_OVERLAYS += device/acer/a510/overlay
+DEVICE_PACKAGE_OVERLAYS += device/acer/a210/overlay
 
 PRODUCT_PROPERTY_OVERRIDES := \
     wifi.interface=wlan0 \
@@ -32,10 +32,10 @@ include frameworks/native/build/tablet-7in-hdpi-1024-dalvik-heap.mk
 PRODUCT_TAGS += dalvik.gc.type-precise
 
 PRODUCT_COPY_FILES += \
-    device/acer/a510/prebuilt/ramdisk/init.picasso_m.rc:root/init.picasso_m.rc \
-    device/acer/a510/prebuilt/ramdisk/fstab.picasso_m:root/fstab.picasso_m \
-    device/acer/a510/prebuilt/ramdisk/ueventd.picasso_m.rc:root/ueventd.picasso_m.rc \
-    device/acer/a510/prebuilt/ramdisk/init.picasso_m.usb.rc:root/init.picasso_m.usb.rc \
+    device/acer/a210/prebuilt/ramdisk/init.picasso_m.rc:root/init.picasso_m.rc \
+    device/acer/a210/prebuilt/ramdisk/fstab.picasso_m:root/fstab.picasso_m \
+    device/acer/a210/prebuilt/ramdisk/ueventd.picasso_m.rc:root/ueventd.picasso_m.rc \
+    device/acer/a210/prebuilt/ramdisk/init.picasso_m.usb.rc:root/init.picasso_m.usb.rc \
 
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/tablet_core_hardware.xml:system/etc/permissions/tablet_core_hardware.xml \
@@ -52,13 +52,13 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.usb.accessory.xml:system/etc/permissions/android.hardware.usb.accessory.xml
 
 PRODUCT_COPY_FILES += \
-    device/acer/a510/prebuilt/etc/vold.fstab:system/etc/vold.fstab \
-    device/acer/a510/prebuilt/etc/gps/gpsconfig.xml:system/etc/gps/gpsconfig.xml \
-    device/acer/a510/prebuilt/usr/idc/acer-touch.idc:system/usr/idc/acer-touch.idc \
-    device/acer/a510/prebuilt/usr/keylayout/Acer-AK00LB.kl:system/usr/keylayout/Acer-AK00LB.kl \
-    device/acer/a510/prebuilt/usr/keylayout/Acer-ICONIA-TAB-KB01.kl:system/usr/keylayout/Acer-ICONIA-TAB-KB01.kl \
-    device/acer/a510/prebuilt/usr/keylayout/acer-dock.kl:system/usr/keylayout/acer-dock.kl \
-    device/acer/a510/prebuilt/usr/keylayout/gpio-keys.kl:system/usr/keylayout/gpio-keys.kl
+    device/acer/a210/prebuilt/etc/vold.fstab:system/etc/vold.fstab \
+    device/acer/a210/prebuilt/etc/gps/gpsconfig.xml:system/etc/gps/gpsconfig.xml \
+    device/acer/a210/prebuilt/usr/idc/acer-touch.idc:system/usr/idc/acer-touch.idc \
+    device/acer/a210/prebuilt/usr/keylayout/Acer-AK00LB.kl:system/usr/keylayout/Acer-AK00LB.kl \
+    device/acer/a210/prebuilt/usr/keylayout/Acer-ICONIA-TAB-KB01.kl:system/usr/keylayout/Acer-ICONIA-TAB-KB01.kl \
+    device/acer/a210/prebuilt/usr/keylayout/acer-dock.kl:system/usr/keylayout/acer-dock.kl \
+    device/acer/a210/prebuilt/usr/keylayout/gpio-keys.kl:system/usr/keylayout/gpio-keys.kl
 
 PRODUCT_PACKAGES := \
     audio.primary.tegra \
@@ -82,13 +82,13 @@ PRODUCT_PACKAGES += \
 
 # Audio config
 PRODUCT_COPY_FILES += \
-    device/acer/a510/tiny_hw.xml:system/etc/sound/picasso_m \
-    device/acer/a510/prebuilt/etc/audio_policy.conf:system/etc/audio_policy.conf
+    device/acer/a210/tiny_hw.xml:system/etc/sound/picasso_m \
+    device/acer/a210/prebuilt/etc/audio_policy.conf:system/etc/audio_policy.conf
 
 # media config xml file
 PRODUCT_COPY_FILES += \
-    device/acer/a510/prebuilt/etc/media_profiles.xml:system/etc/media_profiles.xml \
-    device/acer/a510/prebuilt/etc/media_codecs.xml:system/etc/media_codecs.xml
+    device/acer/a210/prebuilt/etc/media_profiles.xml:system/etc/media_profiles.xml \
+    device/acer/a210/prebuilt/etc/media_codecs.xml:system/etc/media_codecs.xml
 
 # Bluetooth config file
 PRODUCT_COPY_FILES += \

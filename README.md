@@ -1,4 +1,4 @@
-device_acer_a510
+device_acer_a210
 ================
 
-Android Device Acer A510
+Android Device Acer A210

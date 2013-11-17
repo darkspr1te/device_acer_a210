@@ -1,5 +1,5 @@
 # inherit from the proprietary version
--include vendor/acer/a510/BoardConfigVendor.mk
+-include vendor/acer/a210/BoardConfigVendor.mk
 
 TARGET_BOARD_PLATFORM := tegra
 
@@ -12,8 +12,8 @@ ARCH_ARM_HAVE_TLS_REGISTER := true
 ARCH_ARM_USE_NON_NEON_MEMCPY := true
 
 TARGET_NO_BOOTLOADER := true
-TARGET_BOOTLOADER_BOARD_NAME := picasso_m
-TARGET_OTA_ASSERT_DEVICE := picasso_m,a510_pa_cus1
+TARGET_BOOTLOADER_BOARD_NAME := picasso_e2
+TARGET_OTA_ASSERT_DEVICE := picasso_e2,a210_pa_cus1
 
 BOARD_KERNEL_CMDLINE := 
 BOARD_KERNEL_BASE := 0x10000000
@@ -41,7 +41,7 @@ WIFI_DRIVER_FW_PATH_AP      := "/vendor/firmware/fw_bcmdhd_apsta.bin"
 WIFI_DRIVER_FW_PATH_P2P     := "/vendor/firmware/fw_bcmdhd_p2p.bin"
 
 TARGET_KERNEL_SOURCE := kernel/acer/t30
-TARGET_KERNEL_CONFIG := cyanogenmod_picasso_m_defconfig
+TARGET_KERNEL_CONFIG := cyanogenmod_picasso_e2_defconfig
 
 # Avoid the generation of ldrcc instructions
 NEED_WORKAROUND_CORTEX_A9_745320 := true
@@ -55,11 +55,11 @@ BOARD_USES_GENERIC_INVENSENSE := false
 # Bluetooth
 BOARD_HAVE_BLUETOOTH := true
 BOARD_HAVE_BLUETOOTH_BCM := true
-BOARD_BLUEDROID_VENDOR_CONF := device/acer/a510/libbt_vndcfg.txt
-BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/acer/a510/bluetooth
+BOARD_BLUEDROID_VENDOR_CONF := device/acer/a210/libbt_vndcfg.txt
+BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/acer/a210/bluetooth
 
 USE_OPENGL_RENDERER := true
-BOARD_EGL_CFG := device/acer/a510/prebuilt/etc/egl.cfg
+BOARD_EGL_CFG := device/acer/a210/prebuilt/etc/egl.cfg
 BOARD_EGL_NEEDS_LEGACY_FB := true
 
 BOARD_HAS_NO_SELECT_BUTTON := true
