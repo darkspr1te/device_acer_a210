@@ -4,7 +4,7 @@ DEVICE_PACKAGE_OVERLAYS += device/acer/a210/overlay
 
 # USB config contains product-specific USB id
 PRODUCT_COPY_FILES += \
-    device/acer/a700/prebuilt/ramdisk/init.acer.usb.rc:root/init.acer.usb.rc \
+    device/acer/a210/prebuilt/ramdisk/init.acer.usb.rc:root/init.acer.usb.rc \
 
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.sf.lcd_density=240
@@ -30,11 +30,11 @@ $(call inherit-product, device/common/gps/gps_us_supl.mk)
 #DEVICE_PACKAGE_OVERLAYS += device/acer/a210/overlay
 
 
-PRODUCT_COPY_FILES += \
-    device/acer/a210/prebuilt/ramdisk/init.picasso_e2.rc:root/init.picasso_e2.rc \
-    device/acer/a210/prebuilt/ramdisk/fstab.picasso_e2:root/fstab.picasso_e2 \
-    device/acer/a210/prebuilt/ramdisk/ueventd.picasso_e2.rc:root/ueventd.picasso_e2.rc \
-    device/acer/a210/prebuilt/ramdisk/init.picasso_e2.usb.rc:root/init.picasso_e2.usb.rc \
+#PRODUCT_COPY_FILES += \
+#    device/acer/a210/prebuilt/ramdisk/init.picasso_e2.rc:root/init.picasso_e2.rc \
+#    device/acer/a210/prebuilt/ramdisk/fstab.picasso_e2:root/fstab.picasso_e2 \
+#    device/acer/a210/prebuilt/ramdisk/ueventd.picasso_e2.rc:root/ueventd.picasso_e2.rc \
+#    device/acer/a210/prebuilt/ramdisk/init.picasso_e2.usb.rc:root/init.picasso_e2.usb.rc \
 
 
 
