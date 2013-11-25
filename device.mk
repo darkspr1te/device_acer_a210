@@ -1,6 +1,5 @@
 $(call inherit-product-if-exists, vendor/acer/a210/a210-vendor.mk)
-
-DEVICE_PACKAGE_OVERLAYS += device/acer/a210/overlay
+#include device/acer/t30-common/device_base.mk
 
 # USB config contains product-specific USB id
 PRODUCT_COPY_FILES += \
@@ -13,7 +12,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_BOOTLOADER := picasso_e2
 
 # Inherit t30-common
-$(call inherit-product, device/acer/t30-common/device_base.mk)
+
 
 
 $(call inherit-product, $(SRC_TARGET_DIR)/product/languages_full.mk)
@@ -27,14 +26,14 @@ $(call inherit-product, device/common/gps/gps_us_supl.mk)
 #rest is non t30 common so is device specific - not verified 
 
 
-#DEVICE_PACKAGE_OVERLAYS += device/acer/a210/overlay
+DEVICE_PACKAGE_OVERLAYS += device/acer/a210/overlay
 
 
-#PRODUCT_COPY_FILES += \
-#    device/acer/a210/prebuilt/ramdisk/init.picasso_e2.rc:root/init.picasso_e2.rc \
-#    device/acer/a210/prebuilt/ramdisk/fstab.picasso_e2:root/fstab.picasso_e2 \
-#    device/acer/a210/prebuilt/ramdisk/ueventd.picasso_e2.rc:root/ueventd.picasso_e2.rc \
-#    device/acer/a210/prebuilt/ramdisk/init.picasso_e2.usb.rc:root/init.picasso_e2.usb.rc \
+PRODUCT_COPY_FILES += \
+    device/acer/a210/prebuilt/ramdisk/init.picasso_e2.rc:root/init.picasso_e2.rc \
+    device/acer/a210/prebuilt/ramdisk/fstab.picasso_e2:root/fstab.picasso_e2 \
+    device/acer/a210/prebuilt/ramdisk/ueventd.picasso_e2.rc:root/ueventd.picasso_e2.rc \
+ #   device/acer/a210/prebuilt/ramdisk/init.picasso_e2.usb.rc:root/init.picasso_e2.usb.rc \
 
 
-
+$(call inherit-product, device/acer/t30-common/device_base.mk)

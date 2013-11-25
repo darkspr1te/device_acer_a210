@@ -9,7 +9,6 @@
 /dev/ov5640	0660	media	camera
 /dev/ov9740	0660	media	camera
 /dev/ov5650	0660	media	camera
-/dev/mt9d115	0660	media	camera
 /dev/ov2710	0660	media	camera
 /dev/sh532u	0660	media	camera
 /dev/tps61050-1	0660	media	camera

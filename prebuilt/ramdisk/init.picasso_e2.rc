@@ -3,28 +3,30 @@ import init.acer.usb.rc
 on early-init
     mount debugfs debugfs /sys/kernel/debug
 
-    export SECONDARY_STORAGE /mnt/external_sd:/mnt/usb_storage
-    export EXTERNAL_STORAGE /storage/sdcard0
-    mkdir /storage 0550 system sdcard_r
-    mkdir /storage/sdcard0 0000 system system
-    symlink /storage/sdcard0 /sdcard
-    symlink /storage/sdcard0 /mnt/sdcard
+on init
+    # See storage config details at http://source.android.com/tech/storage/
+    mkdir /mnt/shell/emulated 0700 shell shell
+    mkdir /storage/emulated 0555 root root
 
-    export SECOND_VOLUME_STORAGE /mnt/external_sd
-    mkdir /mnt/external_sd 0000 system system
+    export EXTERNAL_STORAGE /storage/emulated/legacy
+    export EMULATED_STORAGE_SOURCE /mnt/shell/emulated
+    export EMULATED_STORAGE_TARGET /storage/emulated
 
-    export THIRD_VOLUME_STORAGE /mnt/usb_storage
-    mkdir /mnt/usb_storage 0700 system system
-    mount tmpfs tmpfs /mnt/usb_storage mode=755,gid=1000
+    # Support legacy paths
+    symlink /storage/emulated/legacy /sdcard
+    symlink /storage/emulated/legacy /mnt/sdcard
+    symlink /storage/emulated/legacy /storage/sdcard0
+    symlink /mnt/shell/emulated/0 /storage/emulated/legacy
 
-    # create directory for mounting usb drives
-    # mkdir /mnt/usbdrive 0666 system system
-    # symlink /mnt/usbdrive /usbdrive
+    export SECONDARY_STORAGE /storage/sdcard1:/storage/usb0
+    mkdir /storage/sdcard1 0000 system system
+    symlink /storage/sdcard1 /mnt/external_sd
+    mkdir /storage/usb0 0000 system system
+    symlink /storage/usb0 /mnt/usb_storage
 
 on fs
     setprop ro.crypto.tmpfs_options size=128m,mode=0771,uid=1000,gid=1000
     setprop ro.crypto.umount_sd false
-    mount_all /fstab.${ro.hardware}
 
 on post-fs-data
     mkdir /data/misc/wifi 0770 wifi wifi
@@ -33,15 +35,15 @@ on post-fs-data
     mkdir /data/nvcam 0700 media camera
     chown dhcp dhcp /data/misc/dhcp
 
-    # we will remap this as /mnt/sdcard0 with the sdcard fuse tool
-    mkdir /data/media 0770 media_rw media_rw
+    mkdir /data/gps 700 gps system
+    chown gps system /data/gps
+
+    # we will remap this as /mnt/sdcard with the sdcard fuse tool
+    mkdir /data/media 0775 media_rw media_rw
     chown media_rw media_rw /data/media
 
     # Set indication (checked by vold) that we have finished this action
     setprop vold.post_fs_data_done 1
-
-    # Insert NTFS filesystem driver
-    insmod system/lib/modules/ufsd.ko
 
 on boot
 
@@ -52,20 +54,28 @@ on boot
 # bluetooth
     # UART device
     chmod 0660 /dev/ttyHS2
-    chown bluetooth bluetooth /dev/ttyHS2
+    chown bluetooth net_bt_stack /dev/ttyHS2
 
     # power up/down interface
     chmod 0660 /sys/class/rfkill/rfkill0/state
     chmod 0660 /sys/class/rfkill/rfkill0/type
-    chown bluetooth bluetooth /sys/class/rfkill/rfkill0/state
-    chown bluetooth bluetooth /sys/class/rfkill/rfkill0/type
-    chown bluetooth bluetooth /sys/dev-info_bt/vendor
+    chown bluetooth net_bt_stack /sys/class/rfkill/rfkill0/state
+    chown bluetooth net_bt_stack /sys/class/rfkill/rfkill0/type
+    restorecon /sys/devices/platform/bcm4329_rfkill/rfkill/rfkill0/state
+    restorecon /sys/devices/platform/bcm4329_rfkill/rfkill/rfkill0/type
+    chown bluetooth net_bt_stack /sys/dev-info_bt/vendor
 
     # bluetooth MAC address programming
-    chown bluetooth bluetooth ro.bt.bdaddr_path
-    chown bluetooth bluetooth /system/etc/bluetooth
-    chown bluetooth bluetooth /data/misc/bluetooth
+    chown bluetooth net_bt_stack ro.bt.bdaddr_path
+    chown bluetooth net_bt_stack /system/etc/bluetooth
+    chown bluetooth net_bt_stack /data/misc/bluetooth
     setprop ro.bt.bdaddr_path "/sys/dev-info_eeprom/BTMAC"
+
+    # bluetooth LPM
+    chmod 0220 /proc/bluetooth/sleep/lpm
+    chmod 0220 /proc/bluetooth/sleep/btwrite
+    chown bluetooth net_bt_stack /proc/bluetooth/sleep/lpm
+    chown bluetooth net_bt_stack /proc/bluetooth/sleep/btwrite
 
 # nvdps
     chown system system /sys/class/graphics/fb0/device/nvdps
@@ -75,16 +85,20 @@ on boot
 
 # Touch
     chmod 644 /sys/Touch/plugged
-    chmod 664 /sys/Touch/sensitivity
+    chmod 664 /sys/Touch/sensitivity_raw
     chmod 664 /sys/Touch/filter
     chown system system /sys/Touch/plugged
-    chown system system /sys/Touch/sensitivity
+    chown system system /sys/Touch/sensitivity_raw
     chown system system /sys/Touch/filter
+    restorecon /sys/Touch/sensitivity_raw
+
+    # Default to "very high" sensitivity
+    write /sys/Touch/sensitivity_raw 50
 
 # powerkey led
     chown system system /sys/class/leds/acer-leds/brightness
 
-# didim
+# didim 
     chown system system /sys/class/graphics/fb0/device/smartdimmer/enable
     chown system system /sys/class/graphics/fb0/device/smartdimmer/aggressiveness
     chown system system /sys/class/graphics/fb0/device/smartdimmer/aggress_list
@@ -113,39 +127,51 @@ on boot
 # wifi insmod
     insmod /system/lib/modules/cfg80211.ko
     insmod /system/lib/modules/bcmdhd.ko
+    
+    chown radio radio /proc/cmdline
+    chmod 0777 /proc/cmdline
 
 # Power management settings
     write /sys/module/cpu_tegra3/parameters/no_lp 0
     #write /sys/module/tegra3_emc/parameters/emc_enable 0
     #write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 1000000
-
-    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor conservative
-    write /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor conservative
-    write /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor conservative
-    write /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor conservative
-
-    write /sys/devices/system/cpu/cpufreq/conservative/up_threshold 95
-    write /sys/devices/system/cpu/cpufreq/conservative/down_threshold 75
-    write /sys/devices/system/cpu/cpufreq/conservative/freq_step 3
-
     write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor interactive
     write /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor interactive
     write /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor interactive
     write /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor interactive
     write /sys/devices/system/cpu/cpufreq/interactive/boost_factor 2
+    write /sys/devices/system/cpu/cpufreq/interactive/input_boost 1
     write /sys/devices/system/cpu/cpufreq/interactive/sustain_load 80
     write /sys/module/cpu_tegra3/parameters/auto_hotplug 1
     write /sys/module/cpuidle/parameters/lp2_in_idle 1
+
+    restorecon /sys/devices/system/cpu
+    restorecon /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+    restorecon /sys/devices/system/cpu/cpufreq/interactive/above_hispeed_delay
+    restorecon /sys/devices/system/cpu/cpufreq/interactive/boost
+    restorecon /sys/devices/system/cpu/cpufreq/interactive/boost_factor
+    restorecon /sys/devices/system/cpu/cpufreq/interactive/go_hispeed_load
+    restorecon /sys/devices/system/cpu/cpufreq/interactive/go_maxspeed_load
+    restorecon /sys/devices/system/cpu/cpufreq/interactive/hispeed_freq
+    restorecon /sys/devices/system/cpu/cpufreq/interactive/input_boost
+    restorecon /sys/devices/system/cpu/cpufreq/interactive/io_is_busy
+    restorecon /sys/devices/system/cpu/cpufreq/interactive/max_boost
+    restorecon /sys/devices/system/cpu/cpufreq/interactive/min_sample_time
+    restorecon /sys/devices/system/cpu/cpufreq/interactive/sustain_load
+    restorecon /sys/devices/system/cpu/cpufreq/interactive/timer_rate
+    restorecon /sys/devices/tegradc.0/smartdimmer/aggressiveness
+    restorecon /sys/devices/tegradc.0/smartdimmer/enable
+
     chown system system /sys/devices/system/cpu/cpufreq/interactive/go_maxspeed_load
     chown system system /sys/devices/system/cpu/cpufreq/interactive/max_boost
     chown system system /sys/dev-power_mode/power_mode
+    restorecon /sys/dev-power_mode/power_mode
 
+    write /sys/dev-power_mode/power_mode 2
     write /sys/module/cpu_tegra/parameters/performance_mode 0
-    write /sys/module/cpu_tegra/parameters/balanced_mode 1100000
-    write /sys/module/cpu_tegra/parameters/powersaving_mode 1100000
-    write /sys/class/graphics/fb0/device/smartdimmer/aggress_table 1:1,3/2:1,3/3:1,3
-
-
+    write /sys/module/cpu_tegra/parameters/balanced_mode 1200000
+    write /sys/module/cpu_tegra/parameters/powersaving_mode 1200000
+    write /sys/class/graphics/fb0/device/smartdimmer/aggress_table 1:1,3/2:3,3/3:3,3
 
 # Default Read Ahead value for sdcards
     write /sys/block/mmcblk0/queue/read_ahead_kb 2048
@@ -166,8 +192,12 @@ on boot
     chown system system /sys/devices/system/cpu/cpufreq/interactive/go_maxspeed_load
     chown system system /sys/devices/system/cpu/cpufreq/interactive/max_boost
 
-service wpa_supplicant /system/bin/wpa_supplicant \
-    -Dnl80211 -iwlan0 -c/data/misc/wifi/wpa_supplicant.conf -puse_p2p_group_interface=1 -e/data/misc/wifi/entropy.bin
+# EACK
+    chown system system /sys/kernel/debug/tegra_emc/eack_state
+
+service p2p_supplicant /system/bin/wpa_supplicant \
+    -iwlan0 -Dnl80211 -c/data/misc/wifi/wpa_supplicant.conf -N \
+    -ip2p0 -Dnl80211 -c/data/misc/wifi/p2p_supplicant.conf -e/data/misc/wifi/entropy.bin -puse_p2p_group_interface=1
 #   we will start as root and wpa_supplicant will switch to user wifi
 #   after setting up the capabilities required for WEXT
 #   user wifi
@@ -177,12 +207,28 @@ service wpa_supplicant /system/bin/wpa_supplicant \
     disabled
     oneshot
 
-service dhcpcd_wlan0 /system/bin/dhcpcd -BK
+service wpa_supplicant /system/bin/wpa_supplicant \
+    -iwlan0 -Dnl80211 -c/data/misc/wifi/wpa_supplicant.conf -e/data/misc/wifi/entropy.bin
+#   we will start as root and wpa_supplicant will switch to user wifi
+#   after setting up the capabilities required for WEXT
+#   user wifi
+#   group wifi inet keystore
+    class main
+    socket wpa_wlan0 dgram 660 wifi wifi
+    disabled
+    oneshot
+
+service dhcpcd_wlan0 /system/bin/dhcpcd -aABDKL
     class main
     disabled
     oneshot
 
-service dhcpcd_eth0 /system/bin/dhcpcd -ABKL -f/system/etc/dhcpcd/dhcpcd.conf
+service dhcpcd_eth0 /system/bin/dhcpcd -ABDKL -f/system/etc/dhcpcd/dhcpcd.conf
+     class main
+     disabled
+     oneshot
+
+service dhcpcd_usb0 /system/bin/dhcpcd -ABDKL -f/system/etc/dhcpcd/dhcpcd.conf
      class main
      disabled
      oneshot
@@ -191,6 +237,11 @@ service dhcpcd_p2p /system/bin/dhcpcd -aABKL
      class main
      disabled
      oneshot
+
+service dhcpcd_bt-pan /system/bin/dhcpcd -ABKL
+    class main
+    disabled
+    oneshot
 
 service iprenew_wlan0 /system/bin/dhcpcd -n
     class main
@@ -202,42 +253,45 @@ service iprenew_eth0 /system/bin/dhcpcd -n
     disabled
     oneshot
 
+service iprenew_usb0 /system/bin/dhcpcd -n
+    class main
+    disabled
+    oneshot
+
 service iprenew_p2p /system/bin/dhcpcd -n
     class main
     disabled
     oneshot
 
-# create virtual SD card at /storage/sdcard0, based on the /data/media directory
-# deamon will drop to user/group system/media_rw after initializing
-# underlying files in /data/media wil be created with user and group media_rw (1023)
-service sdcard /system/bin/sdcard /data/media 1023 1023
+service iprenew_bt-pan /system/bin/dhcpcd -n
+    class main
+    disabled
+    oneshot
+on fs
+    mount_all /fstab.acer
+
+# virtual sdcard daemon running as media_rw (1023)
+service sdcard /system/bin/sdcard /data/media /mnt/shell/emulated 1023 1023
     class late_start
 
-#BCM
-service hciattach /system/bin/brcm_patchram_plus --enable_hci --use_baudrate_for_download \
-    --baudrate 3000000 --patchram /etc/firmware/bcm4330.hcd  --enable_lpm /dev/ttyHS2 \
-    --no2bytes --tosleep 5000
-    user bluetooth
-    group bluetooth net_bt_admin
-    disabled
-
-# GPS init and start GPS daemon
-  on boot
+# Start GPS daemon
+on boot
   write /sys/class/gpio/export 162
   write /sys/class/gpio/gpio162/value 0
   write /sys/class/gpio/gpio162/direction out
-  chown root system /sys/class/gpio/gpio162/value
-  chmod 0664 /sys/class/gpio/gpio162/value
   write /sys/class/gpio/export 163
   write /sys/class/gpio/gpio163/direction out
   write /sys/class/gpio/gpio163/value 1
-  chown root system /sys/class/gpio/gpio163/value
-  chmod 0664 /sys/class/gpio/gpio163/value
-  service gps-daemon /system/bin/glgps_nvidiaTegra2android -c /system/etc/gps/gpsconfig.xml
-  user gps
-  socket gps seqpacket 0660 gps system
-  group system inet sdcard_rw sdcard_r
+  chmod 0660 /sys/class/gpio/gpio162/value
+  chown gps gps /sys/class/gpio/gpio162/value
+  chmod 0660 /sys/class/gpio/gpio163/value
+  chown gps gps /sys/class/gpio/gpio162/value
+
+service gps-daemon /system/bin/glgps_nvidiaTegra2android -c /system/etc/gps/gpsconfig.xml
   class late_start
+  socket gps seqpacket 0660 gps system
+  user gps
+  group system inet sdcard_rw sdcard_r
 
 # Mount usb drives as /usbdrive. Generally usb drives are formatted with FAT
 # filesystem, so we support FAT as of now.
@@ -247,8 +301,17 @@ service hciattach /system/bin/brcm_patchram_plus --enable_hci --use_baudrate_for
 # on device-removed-/sys/block/sda
 #     umount /mnt/usbdrive
 
-# Prepare TF service
+# start tf_daemon service
 import init.tf.rc
+
+service tf_daemon sc-d
+    class main
+    user root
+    group shell
+
+# may restart due to /data/tf not existing yet
+on property:init.svc.tf_daemon=restarting
+    mkdir /data/tf
 
 # Enable NvCpuD, and set it to never poll config again
 on boot
@@ -259,123 +322,28 @@ service nvcpud /system/bin/nvcpud
     class main
     user root
     group root
-    oneshot
 
-service acer_power /system/bin/sh /extra_power_conf.sh
-    user system
-    oneshot
+# DOCK2 Setting & start service
+on boot
+    chmod 0660 /sys/dock/dock
+    chown system system /sys/dock/dock
+    chmod 0660 /sys/dock/dockin
+    chown system system /sys/dock/dockin
 
-on property:persist.sys.acer.ext_pow_conf=1
-    start acer_power
+# TODO: Use this?
+# service acer_dock_detect /system/bin/acer_dock_daemon
+#     class late_start
+#     user system
 
-on property:persist.sys.acer.ext_pow_conf=2
-    start acer_power
+# Performance mode
+# Powersave
+on property:sys.cpu.mode=0
+    write /sys/dev-power_mode/power_mode 3
 
-on property:persist.sys.acer.ext_pow_conf=3
-    start acer_power
+# Balanced
+on property:sys.cpu.mode=1
+    write /sys/dev-power_mode/power_mode 2
 
-# Acer log service
-service acer_log /system/bin/alog
-    user root
-    group system
-    oneshot
-
-on property:persist.service.alog.enable=1
-    start acer_log
-
-on property:persist.service.alog.enable=0
-    stop acer_log
-
-# Postboot service
-service postboot /system/bin/sh /postboot.sh
-    user root
-    oneshot
-
-on property:init.svc.bootanim=stopped
-    start postboot
-
-service dx_ctrl /system/bin/dx_drm_server_ctrl
-    class dxdrm
-    oneshot
-
-on property:dx.playready.enabled=true
-    class_start dxdrm
-
-on property:ro.carrier=wifi-only
-    stop ril-daemon
-
-# Discretix DRM engine
-service dx_drm_server /system/bin/DxDrmServerIpc -f -o allow_other /data/DxDrm/fuse
-    user media
-    group system sdcard_r
-    disabled
-
-on property:dx.drm.server.state=start
-    chown media system /dev/fuse
-    chmod 660 /dev/fuse
-    mkdir /data/DxDrm
-    mkdir /data/DxDrm/fuse
-    mkdir /data/DxDrm/Credentials
-    mkdir /data/DxDrm/Credentials/PlayReady
-
-    symlink /system/etc/DxDrmConfig_Server.txt /data/DxDrm/DxDrmConfig_Server.txt
-    symlink /system/etc/DxDrmConfig.txt /data/DxDrm/DxDrmConfig.txt
-    symlink /system/etc/DxPrdyProvisionObf.pkg /data/DxDrm/Credentials/PlayReady/DxPrdyProvisionObf.pkg
-    symlink /system/etc/RevInfo2v13_20100712.xml /data/DxDrm/RevInfo2v13_20100712.xml
-    symlink /system/etc/revInfo2.xml /data/DxDrm/revInfo2.xml
-
-    # We should enable access to IPC service to mounting point when not running as root.
-    chmod 777 /data/DxDrm/fuse
-
-    # We want to enable all the processes to be able to add the trace and log files
-    chmod 777 /data/DxDrm
-    mkdir /sdcard/download
-    start dx_drm_server
-
-on property:dx.drm.server.state=stop
-    stop dx_drm_server
-
-# start netdump for debugging
-service netdump /system/xbin/tcpdump -i any -C 5 -p -s 0 -w /sdcard/netdump -Z root -W 10
-    user root
-    disabled
-
-# start netdump-without-loop for debugging
-service netdump-woloop /system/xbin/tcpdump -i any -C 5 -p -s 0 -w /sdcard/netdump -Z root
-    user root
-    disabled
-
-on property:persist.service.netdump.enable=2
-    stop netdump
-    start netdump-woloop
-
-on property:persist.service.netdump.enable=1
-    stop netdump-woloop
-    start netdump
-
-on property:persist.service.netdump.enable=0
-    stop netdump
-    stop netdump-woloop
-
-# create filesystems if necessary
-service setup_fs /system/bin/setup_fs \
-        /dev/block/platform/sdhci-tegra.3/by-name/UDA \
-        /dev/block/platform/sdhci-tegra.3/by-name/CAC
-    class core
-    user root
-    group root
-    oneshot
-
-# bugreport is triggered by the POWER, VOLUME-DOWN and VOLUME-UP keys
-service bugreport /system/bin/bugmailer.sh -b /system/media/audio/ui/Dock.ogg -e /system/media/audio/ui/Undock.ogg
-    class main
-    disabled
-    oneshot
-    keycodes 116 115 114
-
-# Customized buffersize for modules
-on property:ro.baseband.module=em820w
-    setprop net.tcp.buffersize.umts        4094,87380,3083520,4096,16384,1027840
-    setprop net.tcp.buffersize.hspa        4094,87380,3083520,4096,16384,1027840
-    setprop net.tcp.buffersize.hspaplus    4094,87380,3083520,4096,16384,1027840
-
+# Performance
+on property:sys.cpu.mode=2
+    write /sys/dev-power_mode/power_mode 1
