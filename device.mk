@@ -13,7 +13,6 @@ PRODUCT_BOOTLOADER := picasso_e2
 
 # Inherit t30-common
 $(call inherit-product, device/acer/t30-common/device_base.mk)
-#include device/acer/t30-common/device_base.mk
 
 $(call inherit-product, $(SRC_TARGET_DIR)/product/languages_full.mk)
 
@@ -27,17 +26,6 @@ $(call inherit-product, device/common/gps/gps_us_supl.mk)
 
 
 DEVICE_PACKAGE_OVERLAYS += device/acer/a210/overlay
-<<<<<<< HEAD
-
-=======
-
-
-PRODUCT_COPY_FILES += \
-    device/acer/a210/prebuilt/ramdisk/init.picasso_e2.rc:root/init.picasso_e2.rc \
-    device/acer/a210/prebuilt/ramdisk/fstab.picasso_e2:root/fstab.picasso_e2 \
-    device/acer/a210/prebuilt/ramdisk/ueventd.picasso_e2.rc:root/ueventd.picasso_e2.rc \
- #   device/acer/a210/prebuilt/ramdisk/init.picasso_e2.usb.rc:root/init.picasso_e2.usb.rc \
->>>>>>> 149c6930465e89d874a7cf982345e37fa5c46a1f
 
 PRODUCT_COPY_FILES += \
     device/acer/a210/prebuilt/ramdisk/init.picasso_e2.rc:root/init.picasso_e2.rc \
@@ -46,4 +34,4 @@ PRODUCT_COPY_FILES += \
  #   device/acer/a210/prebuilt/ramdisk/init.picasso_e2.usb.rc:root/init.picasso_e2.usb.rc \
 
 
-#$(call inherit-product, device/acer/t30-common/device_base.mk)
+
