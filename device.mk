@@ -12,8 +12,8 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_BOOTLOADER := picasso_e2
 
 # Inherit t30-common
-
-
+$(call inherit-product, device/acer/t30-common/device_base.mk)
+#include device/acer/t30-common/device_base.mk
 
 $(call inherit-product, $(SRC_TARGET_DIR)/product/languages_full.mk)
 
@@ -36,4 +36,4 @@ PRODUCT_COPY_FILES += \
  #   device/acer/a210/prebuilt/ramdisk/init.picasso_e2.usb.rc:root/init.picasso_e2.usb.rc \
 
 
-$(call inherit-product, device/acer/t30-common/device_base.mk)
+#$(call inherit-product, device/acer/t30-common/device_base.mk)
