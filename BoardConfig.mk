@@ -28,3 +28,17 @@ BOARD_FLASH_BLOCK_SIZE := 4096
 # TARGET_DEVICE :=
 #RECOVERY_NAME := darkspr1te
 #TARGET_RECOVERY_FSTAB := device/acer/a210/recovery.fstab
+#BOARD_SEPOLICY_DIRS += \
+#        device/acer/t30-common/sepolicy
+
+#BOARD_SEPOLICY_UNION += \
+#        file_contexts \
+#        genfs_contexts \
+#        app.te \
+#        device.te \
+#        drmserver.te \
+#        file.te \
+#        mediaserver.te \
+#        surfaceflinger.te \
+#        system.te \
+#        zygote.te

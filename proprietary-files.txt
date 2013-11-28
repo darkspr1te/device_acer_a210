@@ -14,6 +14,7 @@ etc/firmware/nvavp_vid_ucode.bin
 etc/firmware/nvavp_vid_ucode_alt.bin
 etc/model_frontal.xml
 etc/wifi/bcmdhd.cal
+etc/nvcamera.conf
 lib/egl/libEGL_tegra.so
 lib/egl/libEGL_tegra_impl.so
 lib/egl/libGLESv1_CM_tegra.so

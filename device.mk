@@ -7,7 +7,9 @@ PRODUCT_COPY_FILES += \
 
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.sf.lcd_density=240
-
+# Disable SELinux
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.boot.selinux=disabled
 # So init files are copied properly in device_base.mk
 PRODUCT_BOOTLOADER := picasso_e2
 
@@ -32,6 +34,10 @@ PRODUCT_COPY_FILES += \
     device/acer/a210/prebuilt/ramdisk/fstab.picasso_e2:root/fstab.picasso_e2 \
     device/acer/a210/prebuilt/ramdisk/ueventd.picasso_e2.rc:root/ueventd.picasso_e2.rc \
  #   device/acer/a210/prebuilt/ramdisk/init.picasso_e2.usb.rc:root/init.picasso_e2.usb.rc \
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/configs/bashrc:system/etc/bash/bashrc \
+    $(LOCAL_PATH)/configs/mkshrc:system/etc/mkshrc \
+    $(LOCAL_PATH)/configs/busybox.fstab:system/etc/fstab
 
 
 
