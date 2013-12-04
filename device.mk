@@ -12,15 +12,8 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_BOOTLOADER := picasso_e2
 
 # Inherit t30-common
-<<<<<<< HEAD
 $(call inherit-product, device/acer/t30-common/device_base.mk)
-#include device/acer/t30-common/device_base.mk
 
-=======
-
-$(call inherit-product, device/acer/t30-common/device_base.mk)
-#include device/acer/t30-common/device_base.mk
->>>>>>> f067c98fd5b84f6f27f8823828072c8492f4c647
 $(call inherit-product, $(SRC_TARGET_DIR)/product/languages_full.mk)
 
 
