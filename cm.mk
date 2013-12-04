@@ -26,4 +26,4 @@ PRODUCT_BUILD_PROP_OVERRIDES += \
     TARGET_DEVICE=picasso_e2 \
     BUILD_FINGERPRINT="acer/A210_pa_cus1/picasso_e2:4.1.2/JZO54K/1354108731:user/release-keys" \
     PRIVATE_BUILD_DESC="A210_pa_cus1-user 4.1.2 JZ054K 1354108731 release-keys"
-PRODUCT_DEFAULT_PROPERTY_OVERRIDES += ro.debuggable=1 persist.sys.usb.config=mtp persist.service.adb.enable=1
+#PRODUCT_DEFAULT_PROPERTY_OVERRIDES += ro.debuggable=1 persist.sys.usb.config=mtp persist.service.adb.enable=1

@@ -2,6 +2,7 @@ bin/glgps_nvidiaTegra2android
 bin/nvcpud
 bin/tf_daemon
 etc/enctune.conf
+etc/nvram.txt
 etc/firmware/UartSet1024Kbps.bin
 etc/firmware/UartSet2048Kbps.bin
 etc/firmware/UartSet3Mbps.bin
@@ -27,7 +28,7 @@ lib/hw/gralloc.tegra.so
 lib/hw/hwcomposer.tegra.so
 lib/hw/lights.tegra.so
 lib/hw/sensors.tegra.so
-lib/libnetcmdiface.so
+lib/hw/audio.primary.tegra.so
 lib/liba1026.so
 lib/libakmd.so
 lib/libami.so
@@ -43,6 +44,7 @@ lib/libnvaudioservice.so
 lib/libnvaviparserhal.so
 lib/libnvavp.so
 lib/libnvcamerahdr.so
+lib/libaudioavp.so
 lib/libnvcap.so
 lib/libnvcap_video.so
 lib/libnvcapclk.so
@@ -95,3 +97,9 @@ lib/libnvwinsys.so
 lib/libnvwsi.so
 lib/libstagefrighthw.so
 lib/libtf_crypto_sst.so
+lib/modules/bcmdhd.ko
+lib/modules/cfg80211.ko
+lib/modules/lib80211.ko
+lib/modules/mac80211.ko
+lib/modules/mpu3050.ko
+lib/modules/timerirq.ko

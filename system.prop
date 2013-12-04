@@ -3,3 +3,4 @@ persist.tegra.nvmmlite=1
 ro.sf.lcd_density=160
 nvidia.hwc.mirror_mode=crop
 tf.enable=y
+
